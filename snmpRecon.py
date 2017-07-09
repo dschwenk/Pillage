@@ -11,7 +11,7 @@ class snmpRecon(object):
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='snmpEnumerator', add_help=True)
-        parser.add_argument('host', help='host to scan')    
+        parser.add_argument('host', help='host to scan')
         parser.add_argument('port', help='port to scan')
         args = parser.parse_args()
         self.host=args.host
@@ -21,11 +21,13 @@ class snmpRecon(object):
         print "INFO: Performing nmap snmp script scan for " + ip_address + ":" + port
         nmapSCAN = "nmap -sV -Pn -vv -p %s --script=snmp* -oN pillageResults/%s_snmp.nmap %s" % (port, ip_address, ip_address)
         subprocess.check_output(nmapSCAN, shell=True)
+        print "INFO: nmap snmp script scan done for " + ip_address + ":" + port
 
     def onesixtyoneScan(self,ip_address,port):
         print "INFO: Performing OneSixtyOne snmp scan for " + ip_address + ":" + port
         oneSixtyOneSCAN="onesixtyone -c %s %s >> pillageResults/%s_161snmp.txt" % (self.communityList, ip_address, ip_address)
         subprocess.check_output(oneSixtyOneSCAN, shell=True)
+        print "INFO: OneSixtyOne snmp scan done for " + ip_address + ":" + port
 
     def snmpEnum (self, ip_address, port):
         print "INFO: Performing snmpwalk scan for " + ip_address + ":" + port
@@ -42,7 +44,7 @@ class snmpRecon(object):
             subprocess.check_output(snmpCheckSCAN, shell=True)
         except:
             pass
+
+
 if __name__ == "__main__":
     snmp = snmpRecon()
-
-

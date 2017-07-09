@@ -9,7 +9,7 @@ class smtpRecon(object):
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='smtpEnumerator', add_help=True)
-        parser.add_argument('host', help='host to scan')    
+        parser.add_argument('host', help='host to scan')
         parser.add_argument('port', help='port to scan')
         parser.add_argument('userList', help='users to use in bruteforce')
         parser.add_argument('passList', help='passwords to use in bruteforce')
@@ -24,7 +24,8 @@ class smtpRecon(object):
         #Nmap also has psExec
         nmapSCAN = "nmap -sV -Pn -vv -p %s --script=smtp* -oN pillageResults/%s_smtp.nmap %s" % (port, ip_address, ip_address)
         subprocess.check_output(nmapSCAN, shell=True)
-   
+        print "INFO: nmap smtp script scan done for " + ip_address + ":" + port
+
     def enumUsers(self, ip_address, port):
         print "INFO: Performing brute force user enum for " + ip_address + ":" + port
         result=""
@@ -40,6 +41,7 @@ class smtpRecon(object):
         s.close()
         filepath="{}/{}_smtpEnum.txt".format(self.dirPath,str(ip_address))
         self.recordResults(filepath,result)
+        print "INFO: brute force user enum done for " + ip_address + ":" + port
 
     def recordResults(self, filepath, results):
         with open(filepath, "a") as myfile:

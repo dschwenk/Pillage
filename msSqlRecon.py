@@ -8,7 +8,7 @@ class msSqlRecon(object):
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='msSqlEnumerator', add_help=True)
-        parser.add_argument('host', help='host to scan')    
+        parser.add_argument('host', help='host to scan')
         parser.add_argument('port', help='port to scan')
         parser.add_argument('userList', help='users to use in bruteforce')
         parser.add_argument('passList', help='passwords to use in bruteforce')
@@ -19,9 +19,9 @@ class msSqlRecon(object):
         self.passList=args.passList
         self.username=None
         self.password=None
-        
+
     def bruteforce(self, ip_address, port, userList, passList):
-        print "INFO: Performing hydra msSql scan against " + ip_address 
+        print "INFO: Performing hydra msSql scan against " + ip_address
         hydraCmd = "hydra -L %s -P %s -f -e n -o pillageResults/%s_msSqlhydra.txt -u %s -s %s mssql" % (userList, passList, ip_address, ip_address, port)
         creds={}
         try:
@@ -36,20 +36,20 @@ class msSqlRecon(object):
                         self.password=resultList[6]
                     else:
                         self.password=''
-                    
         except:
             print "INFO: No valid msSql credentials found"
+        print "INFO: hydra msSql scan done against " + ip_address
 
     def nmapScripts(self, ip_address, port):
         print "INFO: Performing nmap msSql script scan for " + ip_address + ":" + port
         msSqlSCAN = "nmap -vv -sV -Pn -p %s --script=ms-sql* -oN 'pillageResults/%s_msSql.nmap' %s" % (port, ip_address, ip_address)
         results = subprocess.check_output(msSqlSCAN, shell=True)
-        
+
         if self.username:
             msSqlSCAN2 = "nmap -vv -sV -Pn -p %s --script=ms-sql-config,ms-sql-dump-hashes,ms-sql-hasdbaccess,ms-sql-tables --script-args mssql.username=%s,mssql.password=%s -oN 'pillageResults/%s_msSql2.nmap' %s" % (port, self.username, self.password, ip_address, ip_address)
             #has xp-cmdshell
             results = subprocess.check_output(msSqlSCAN2, shell=True)
-            
+        print "INFO: nmap msSql script scan done for " + ip_address + ":" + port
 
 if __name__ == "__main__":
     msSql = msSqlRecon()

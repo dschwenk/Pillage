@@ -8,7 +8,7 @@ class rdpRecon(object):
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='rdpEnumerator', add_help=True)
-        parser.add_argument('host', help='host to scan')    
+        parser.add_argument('host', help='host to scan')
         parser.add_argument('port', help='port to scan')
         parser.add_argument('userList', help='users to use in bruteforce')
         parser.add_argument('passList', help='passwords to use in bruteforce')
@@ -17,11 +17,12 @@ class rdpRecon(object):
         self.port=args.port
         self.userList=args.userList
         self.passList=args.passList
-        
+
     def nmapScripts(self, ip_address, port):
         print "INFO: Performing nmap rdp script scan for " + ip_address + ":" + port
         nmapSCAN = "nmap -sV -Pn -vv -p %s --script=rdp* -oN pillageResults/%s_rdp.nmap %s" % (port, ip_address, ip_address)
         subprocess.check_output(nmapSCAN, shell=True)
+        print "INFO: nmap rdp script scan done for " + ip_address + ":" + port
 
     def bruteforce(self, ip_address, port, userList, passList):
         print "INFO: Performing ncrack rdp scan against " + ip_address + ":" + port
@@ -32,9 +33,10 @@ class rdpRecon(object):
             foundString="%s %s/tcp rdp:" % (ip_address, port)
             for result in resultarr:
                 if foundString in result:
-                    print "[*] Valid rdp credentials found: " + result 
+                    print "[*] Valid rdp credentials found: " + result
         except:
             print "INFO: No valid rdp credentials found"
+        print "INFO: ncrack rdp scan done against " + ip_address + ":" + port
 
 if __name__ == "__main__":
     rdp = rdpRecon()

@@ -5,7 +5,7 @@ import subprocess, multiprocessing
 class Pillage(object):
 
     def __init__(self, directoryName="pillageResults", userList="wordlists/users.txt", passList="wordlists/mutatedMega.txt"):
-        self.banner()
+        self.printBanner()
         self.parseArgs()
         self.userList=userList
         self.passList=passList
@@ -14,75 +14,75 @@ class Pillage(object):
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='Analyzes a group of hosts and enumerates interesting info', add_help=True)
-        parser.add_argument('hostfile', help='host range to scan')    
+        parser.add_argument('hostfile', help='host range to scan')
         args = parser.parse_args()
         self.hosts=self.analyzeHostfile(args.hostfile)
 
     def addProcess(self, method, arguments):
-	p = multiprocessing.Process(target=method, args=(arguments,))	
-	p.start()
+        p = multiprocessing.Process(target=method, args=(arguments,))
+        p.start()
 
     def sshEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected SSH on " + host + ":" + port
         script = "python sshRecon.py {} {} {} {}".format(host, port, self.userList, self.passList)
         subprocess.call(script, shell=True)
 
     def ftpEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected FTP on " + host + ":" + port
         script = "python ftpRecon.py {} {} {} {}".format(host, port, self.userList, self.passList)
         subprocess.call(script, shell=True)
 
     #Http and Https are the same but just change filename
     def httpEnum(self, args):
-	host=args[0]
-	port=args[1]
-	protocol=args[2]
+        host=args[0]
+        port=args[1]
+        protocol=args[2]
         print "INFO: Detected webapp on " + host + ":" + port
         script = "python webRecon.py {} {} {} {} {}".format(host, port, protocol, self.userList, self.passList)
         subprocess.call(script, shell=True)
 
     def dnsEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected DNS on " + host + ":" + port
         script = "python dnsRecon.py {} {}".format(host, port)
         subprocess.call(script, shell=True)
 
     def msSqlEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected MS-SQL on " + host + ":" + port
         script = "python msSqlRecon.py {} {} {} {}".format(host, port, self.userList, self.passList)
         subprocess.call(script, shell=True)
 
     def snmpEnum(self, host, port):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected snmp on " + host + ":" + port
         script = "python snmpRecon.py {} {}".format(host, port)
         subprocess.call(script, shell=True)
 
     def smtpEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected smtp on " + host + ":" + port
         script = "python smtpRecon.py {} {} {} {}".format(host, port, self.userList, self.passList)
         subprocess.call(script, shell=True)
 
     def smbEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected smb on " + host + ":" + port
         script = "python smbRecon.py {} {} {} {}".format(host, port, self.userList, self.passList)
         subprocess.call(script, shell=True)
 
     def rdpEnum(self, args):
-	host=args[0]
-	port=args[1]
+        host=args[0]
+        port=args[1]
         print "INFO: Detected rdp on " + host + ":" + port
         script = "python rdpRecon.py {} {} {} {}".format(host, port, self.userList, self.passList)
         subprocess.call(script, shell=True)
@@ -101,9 +101,9 @@ class Pillage(object):
                 elif serv == 'dns':
                     self.addProcess(self.dnsEnum, [host, port])
                 elif 'https' in serv or 'http' in serv:
-		    protocol = 'http'
-		    if 'ssl' in serv or 'https' in serv:
-			protocol = 'http'
+                    protocol = 'http'
+                    if 'ssl' in serv or 'https' in serv:
+                        protocol = 'http'
                     self.addProcess(self.httpEnum, [host, port, protocol])
                 elif serv == 'msSql' or serv == 'ms-sql-s' or serv == 'ms-sql':
                     self.addProcess(self.msSqlEnum, [host, port])
@@ -118,19 +118,22 @@ class Pillage(object):
                 else:
                     print "INFO: no module found for %s" % (serv)
 
-            print "INFO: TCP/UDP Nmap scans completed for " + host 
+            print "INFO: TCP/UDP Nmap scans completed for " + host
 
             #Iterate through UDP
 
     def scanHost(self, host):
         print "INFO: Running general TCP/UDP nmap scans for " + host
         fullPath="{}/{}".format(self.dirPath,str(host))
-        TCPSCAN = "nmap -vv -Pn -A -sC -sV -T 4 -p- -oN '%s.nmap' -oX '%s.xml' %s"  % (fullPath, fullPath, host)
+        #TCPSCAN = "nmap -vv -Pn -A -sC -sV -T 4 -p- -oN '%s.nmap' -oX '%s.xml' %s"  % (fullPath, fullPath, host)
+        TCPSCAN = "nmap -vv -Pn -A -sC -sV -T 4 --top-ports 5000 '%s.nmap' -oX '%s.xml' %s"  % (fullPath, fullPath, host)
+
         results = subprocess.check_output(TCPSCAN, shell=True)
 
         # None of the modules support UDP at this time, so I am omitting the scan and results.
         #UDPSCAN = "nmap -vv -Pn -A -sC -sV -sU -T 4 --top-ports 500 -oN '%sU.nmap' -oX '%sU.xml' %s" % (fullPath, fullPath, host)
         udpresults= []#subprocess.check_output(UDPSCAN, shell=True)
+        print "INFO: general TCP/UDP nmap scans done for " + host
         return self.getInterestingTCP(host, results), self.getInterestingUDP(host, udpresults)
 
     def getInterestingTCP(self, host, results):
@@ -176,7 +179,7 @@ class Pillage(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-    def banner(self):
+    def printBanner(self):
         print "############################################################"
         print "####                      PILLAGE                       ####"
         print "####         Kicking Hosts and Taking Services          ####"

@@ -7,19 +7,19 @@ class webRecon(object):
 
         self.nmapScripts(self.host, self.port)
         self.vulnScan(self.host, self.port)
-        self.dirBust(self.host, self.port)
+        #self.dirBust(self.host, self.port)
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='webEnumerator', add_help=True)
-        parser.add_argument('host', help='host to scan')    
+        parser.add_argument('host', help='host to scan')
         parser.add_argument('port', help='port to scan')
-	    parser.add_argument('protocol', help='web protocol')
+        parser.add_argument('protocol', help='web protocol')
         parser.add_argument('userList', help='users to use in bruteforce')
         parser.add_argument('passList', help='passwords to use in bruteforce')
         args = parser.parse_args()
         self.host=args.host
         self.port=args.port
-	    self.protocol=args.protocol
+        self.protocol=args.protocol
         self.userList=args.userList
         self.passList=args.passList
 
@@ -27,6 +27,7 @@ class webRecon(object):
         print "INFO: Performing nmap web script scan for " + ip_address + ":" + port
         webSCAN = "nmap -sV -Pn -vv -p %s --script='(http* or ssl*) and not (broadcast or dos or external or http-slowloris* or fuzzer)' -oN pillageResults/%s_%s_%s.nmap %s" % (port, ip_address, self.protocol, port, ip_address)
         subprocess.check_output(webSCAN, shell=True)
+        print "INFO: nmap web script scan done for " + ip_address + ":" + port
 
     def dirBust(self, ip_address, port):
         found = []
@@ -59,10 +60,15 @@ class webRecon(object):
         except:
             print "INFO: No items found during dirb scan of " + ip_address
 
+        print "INFO: dirb scan done for %s:%s " % (ip_address, port)
+
+
     def vulnScan(self, ip_address, port):
-        print "INFO: Performing Nikto Scan on " + ip_address + ":" + port
+        print "INFO: Performing nikto Scan on " + ip_address + ":" + port
         niktoScan = "nikto -host %s -p %s >> pillageResults/%s_%snikto_%s.txt -C all" % (ip_address, port, ip_address, self.protocol, port)
         subprocess.check_output(niktoScan, shell=True)
+        print "INFO: nikto Scan done on " + ip_address + ":" + port
+
 
 if __name__ == "__main__":
     web = webRecon()
