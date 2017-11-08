@@ -125,11 +125,11 @@ class Pillage(object):
     def scanHost(self, host):
         print "INFO: Running general TCP/UDP nmap scans for " + host
         fullPath="{}/{}".format(self.dirPath,str(host))
-        #TCPSCAN = "nmap -vv -Pn -A -sC -T 4 -p- -oN '%s.nmap' -oX '%s.xml' %s"  % (fullPath, fullPath, host)
-        TCPSCAN = "nmap -vv -Pn -A -sC -T 4 --top-ports 15000 -oA '%s' %s"  % (fullPath, host)
+        #TCPSCAN = "nmap -vv -Pn -A -sC -T 4 --reason -p- -oN '%s.nmap' -oX '%s.xml' %s"  % (fullPath, fullPath, host)
+        TCPSCAN = "nmap -vv -Pn -A -sC -T 4 --reason --top-ports 15000 -oA '%s' %s"  % (fullPath, host)
         results = subprocess.check_output(TCPSCAN, shell=True)
         # None of the modules support UDP at this time, so I am omitting the scan and results.
-        #UDPSCAN = "nmap -vv -Pn -A -sC -sV -sU -T 4 --top-ports 500 -oA '%sU' %s" % (fullPath, host)
+        #UDPSCAN = "nmap -vv -Pn -A -sC -sV -sU -T 4 --reason --top-ports 500 -oA '%sU' %s" % (fullPath, host)
         udpresults= []#subprocess.check_output(UDPSCAN, shell=True)
         print "INFO: general TCP/UDP nmap scans done for " + host
         return self.getInterestingTCP(host, results), self.getInterestingUDP(host, udpresults)
