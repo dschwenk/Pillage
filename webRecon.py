@@ -6,8 +6,8 @@ class webRecon(object):
         self.site="%s://%s:%s" % (self.protocol, self.host, self.port)
 
         self.nmapScripts(self.host, self.port)
-        self.vulnScan(self.host, self.port)
-        #self.dirBust(self.host, self.port)
+        self.niktoScan(self.host, self.port)
+        self.dirBust(self.host, self.port)
 
     def parseArgs(self):
         parser = argparse.ArgumentParser(prog='webEnumerator', add_help=True)
@@ -63,7 +63,7 @@ class webRecon(object):
         print "INFO: dirb scan done for %s:%s " % (ip_address, port)
 
 
-    def vulnScan(self, ip_address, port):
+    def niktoScan(self, ip_address, port):
         print "INFO: Performing nikto Scan on " + ip_address + ":" + port
         niktoScan = "nikto -host %s -p %s -ask no >> pillageResults/%s_%snikto_%s.txt -C all" % (ip_address, port, ip_address, self.protocol, port)
         subprocess.check_output(niktoScan, shell=True)
