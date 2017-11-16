@@ -65,7 +65,7 @@ class webRecon(object):
 
     def vulnScan(self, ip_address, port):
         print "INFO: Performing nikto Scan on " + ip_address + ":" + port
-        niktoScan = "nikto -host %s -p %s >> pillageResults/%s_%snikto_%s.txt -C all" % (ip_address, port, ip_address, self.protocol, port)
+        niktoScan = "nikto -host %s -p %s -ask no >> pillageResults/%s_%snikto_%s.txt -C all" % (ip_address, port, ip_address, self.protocol, port)
         subprocess.check_output(niktoScan, shell=True)
         print "INFO: nikto Scan done on " + ip_address + ":" + port
 
